@@ -1,0 +1,12 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+.notes-application-container .text-area{
+    margin: 0;
+    padding: 16px;
+    margin: 8px;
+    width: 100%;
+    min-height: 100%;
+}
