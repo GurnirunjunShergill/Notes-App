@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './src/App';
+import './stylesheet.css';
 
 // Select the root DOM node where the app will be mounted
 const rootElement = document.getElementById('root');
