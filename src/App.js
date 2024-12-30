@@ -31,7 +31,8 @@ const App = () => {
   const deleteNote = (indexToRemove) => {
     const updatedData = data.filter((_, index) => index !== indexToRemove);
     setData(updatedData);
-    window.localStorage.setItem('data', JSON.stringify(updatedData))
+    setSelectedNoteIndex(undefined);
+    window.localStorage.setItem('data', JSON.stringify(updatedData));
   };
 
   const selectNote = (index) => {
@@ -54,7 +55,7 @@ const App = () => {
           {data?.map((note, index) => (
             <div
               key={index}
-              className="saved-note"
+              className={`saved-note ${selectedNoteIndex === index && `saved-note-selected`}`}
               onClick={() => selectNote(index)}
             >
               <p>{note.noteName}</p>
