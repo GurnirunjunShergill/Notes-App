@@ -150,3 +150,11 @@ background-color: #4C4E6B;
 .notes-application-container .notes-application-content-container .note-content-container textarea:focus-visible{
     outline: solid #4d5de5 2px;
 }
+
+.notes-application-container .notes-application-content-container .note-content-container-empty{
+    min-width: 80%;
+    max-width: 80%;
+    box-sizing: border-box;
+    background-color: #2A2B3C;
+    border-radius: 10px;
+}

@@ -3,36 +3,37 @@ import "./App.css";
 
 const App = () => {
   const [data, setData] = useState([]);
-  const [noteName, setNoteName] = useState("unnamed note");
-  const [noteData, setNoteData] = useState("");
+  const [noteName, setNoteName] = useState();
+  const [noteData, setNoteData] = useState();
   const [selectedNoteIndex, setSelectedNoteIndex] = useState(undefined);
 
-  useEffect(()=>{
-    const existingData = window.localStorage.getItem('data');
-    if(existingData){
-        const parsedData = JSON.parse(existingData);
-        setData(parsedData)
+  useEffect(() => {
+    const existingData = window.localStorage.getItem("data");
+    if (existingData) {
+      const parsedData = JSON.parse(existingData);
+      setData(parsedData);
     }
-  },[])
+  }, []);
 
   const saveNote = () => {
-    let updatedData;
-    if (!isNaN(Number(selectedNoteIndex))) {
-        data[selectedNoteIndex] = { noteName: noteName, noteData: noteData };
-        updatedData = [...data];
-    } else {
-      updatedData = [...data, { noteName: noteName, noteData: noteData }];
-    }
-    setData(updatedData);
-    !Number(selectedNoteIndex) && setSelectedNoteIndex(updatedData.length - 1);
-    window.localStorage.setItem('data', JSON.stringify(updatedData))
+    setData((previousData) => {
+      const updatedData = [...previousData];
+      updatedData[selectedNoteIndex] = {
+        noteName: noteName,
+        noteData: noteData,
+      };
+      window.localStorage.setItem("data", JSON.stringify(updatedData));
+      return updatedData;
+    });
   };
 
   const deleteNote = (indexToRemove) => {
-    const updatedData = data.filter((_, index) => index !== indexToRemove);
-    setData(updatedData);
-    setSelectedNoteIndex(undefined);
-    window.localStorage.setItem('data', JSON.stringify(updatedData));
+    setData(previousData => {
+      const updatedData = previousData.filter((_, index) => index !== indexToRemove);
+      window.localStorage.setItem("data", JSON.stringify(updatedData));
+      setSelectedNoteIndex(undefined);
+      return updatedData;
+    });
   };
 
   const selectNote = (index) => {
@@ -41,45 +42,64 @@ const App = () => {
     setSelectedNoteIndex(index);
   };
 
-  const addNewNote = () =>{
-    setSelectedNoteIndex(undefined);
-    setNoteName('unnamed note');
-    setNoteData('');
-  }
+  const addNewNote = () => {
+    setData((previousData) => [
+      ...previousData,
+      { noteName: "unnamed note", noteData: "" },
+    ]);
+    setSelectedNoteIndex(() => {
+      if (data?.length > 0) {
+        return data.length;
+      } else {
+        return 0;
+      }
+    });
+    setNoteName("unnamed note");
+    setNoteData("");
+  };
 
   return (
     <div className="notes-application-container">
       <h1>Notes Application</h1>
       <div className="notes-application-content-container">
         <div className="saved-notes-container">
-          {data?.map((note, index) => (
-            <div
-              key={index}
-              className={`saved-note ${selectedNoteIndex === index && `saved-note-selected`}`}
-              onClick={() => selectNote(index)}
-            >
-              <p>{note.noteName}</p>
-              <button onClick={() => deleteNote(index)}>delete</button>
-            </div>
-          ))}
+          {data.map((note, index) => {
+            const {noteName} = note;
+            return (
+              <div
+                key={index}
+                className={`saved-note ${
+                  selectedNoteIndex === index && `saved-note-selected`
+                }`}
+                onClick={() => selectNote(index)}
+              >
+                <p>{noteName}</p>
+                <button onClick={() => deleteNote(index)}>delete</button>
+              </div>
+            );
+          })}
           <button onClick={addNewNote}>add new note</button>
         </div>
-        <div className="note-content-container">
-          <div className="note-content-name-container">
-            <input
-              onChange={(event) => setNoteName(event.target.value)}
-              value={noteName}
-              type="text"
-              placeholder="Note Name"
+        {selectedNoteIndex === undefined ? (
+          <div className="note-content-container-empty" />
+        ) : (
+          <div className="note-content-container">
+            <div className="note-content-name-container">
+              <input
+                onChange={(event) => setNoteName(event.target.value)}
+                value={noteName}
+                type="text"
+                placeholder="Note Name"
+              />
+              <button onClick={saveNote}>save</button>
+            </div>
+            <textarea
+              value={noteData}
+              onChange={(event) => setNoteData(event.target.value)}
+              className="text-area"
             />
-            <button onClick={saveNote}>save</button>
           </div>
-          <textarea
-            value={noteData}
-            onChange={(event) => setNoteData(event.target.value)}
-            className="text-area"
-          />
-        </div>
+        )}
       </div>
     </div>
   );
